@@ -40,6 +40,7 @@ public class SystemTest {
      */
     
     
+    
     /**
      * 
      * Setup demonstration system configuration:
@@ -67,6 +68,8 @@ public class SystemTest {
      *  in this same test class.
      *   
      */
+    
+    
     public void setupDemoSystemConfig() {
         input("1 07:00, HubTerminal, ht, addDStation, A,   0,   0, 5");
         input("1 07:00, HubTerminal, ht, addDStation, B, 400, 300, 3");
@@ -127,9 +130,21 @@ public class SystemTest {
         
         setupDemoSystemConfig();
         
-        input ("2 09:30, KeyReader, B.2.kr, insertKey, key-2");
+        input ("2 09:30, KeyReader, B.2.kr, insertKey, key-2"); 
+        //expect("2 09:30, BikeLock, B.2.bl, unlocked");
         expect("2 09:30, OKLight,   B.2.ok, flashed");
+        
     }
+    
+    /* Test for bikereturn*/
+    
+    @Test
+    public void testreturnBike(){
+    	logger.info("Starting test:);
+    }
+    
+    
+    
     
     
     /*
