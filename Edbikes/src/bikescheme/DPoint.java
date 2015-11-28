@@ -21,6 +21,9 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
     private int index;
     private BikeLock bikeLock;
     private BikeSensor bikeSensor;
+
+    private DStation dstation;
+ 
  
     /**
      * 
@@ -31,7 +34,7 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
      * @param index of reference to this docking point  in owning DStation's
      *  list of its docking points.
      */
-    public DPoint(String instanceName, int index) {
+    public DPoint(String instanceName, int index, DStation dstation) {
 
      // Construct and make connections with interface devices
         
@@ -43,6 +46,8 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
         bikeLock = new BikeLock(instanceName + ".bl");
         bikeSensor = new BikeSensor(instanceName + ".bs");
         bikeSensor.setObserver(this);
+        
+        this.dstation = dstation;
 
         
     }
@@ -70,14 +75,18 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
      */
     public void keyInserted(String keyId) {
         logger.fine(getInstanceName());
-       // bikeLock.unlock();
+        //add trip start
+        bikeLock.unlock();
         okLight.flash();       
     }
     
     public void bikeDocked(String keyId){
     	logger.fine(getInstanceName());
-    	bikeSensor.dockBike(keyId);
-    	okLight.flash();
-    	
+    	User user = dstation.getHub().userMap.get(keyId);
+    	user.setHasBike(false);
+    	//add trip end 
+    	bikeLock.lock();
+    	okLight.flash();	
     }
+    
 }

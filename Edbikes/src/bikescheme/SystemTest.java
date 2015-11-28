@@ -138,9 +138,14 @@ public class SystemTest {
     
     /* Test for bikereturn*/
     
-    @Test
-    public void testreturnBike(){
-    	//logger.info("Starting test:);
+   @Test
+    public void testReturnBike(){
+    	logger.info("Starting test: testReturnBike");
+    	setupDemoSystemConfig();
+    	
+    	input ("2 10:30, BikeSensor, B.1.bs, key-1");
+    	expect ("2 10:30, BikeLock, B.1.bl, locked");
+    	expect ("2 10:30, OKLight, B.1.ok, flashed");
     }
     
     

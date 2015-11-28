@@ -6,6 +6,7 @@ public class User {
 	//private String name;
 	private String keyID;
 	private boolean bikestat;
+	//mke into dictionary? need to add trip things
 	
 	
 	public User (String keyID) {

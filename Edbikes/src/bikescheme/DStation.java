@@ -25,6 +25,7 @@ public class DStation implements StartRegObserver {
     private CardReader cardReader; 
     private KeyIssuer keyIssuer;
     private List<DPoint> dockingPoints;
+    private Hub hub;
  
     /**
      * 
@@ -41,13 +42,15 @@ public class DStation implements StartRegObserver {
             String instanceName,
             int eastPos,
             int northPos,
-            int numPoints) {
+            int numPoints,
+            Hub hub) {
         
      // Construct and make connections with interface devices
         
         this.instanceName = instanceName;
         this.eastPos = eastPos;
         this.northPos = northPos;
+        this.hub = hub;
         
         touchScreen = new DSTouchScreen(instanceName + ".ts");
         touchScreen.setObserver(this);
@@ -59,10 +62,12 @@ public class DStation implements StartRegObserver {
         dockingPoints = new ArrayList<DPoint>();
         
         for (int i = 1; i <= numPoints; i++) {
-            DPoint dp = new DPoint(instanceName + "." + i, i - 1);
+            DPoint dp = new DPoint(instanceName + "." + i, i - 1, this);
             dockingPoints.add(dp);
         }
     }
+    
+    Hub getHub(){return hub;}
        
     void setDistributor(EventDistributor d) {
         touchScreen.addDistributorLinks(d); 
@@ -102,7 +107,7 @@ public class DStation implements StartRegObserver {
         String keyID = keyIssuer.issueKey(); // Generate output event
         
         // Add new user to a data structure of Users
-        //hb.addUser(keyID);
+        hub.addUser(keyID);
         
     }
     
