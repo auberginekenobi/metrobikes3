@@ -41,7 +41,7 @@ public class Hub implements AddDStationObserver {
         terminal.setObserver(this);
         display = new HubDisplay("hd");
         dockingStationMap = new HashMap<String,DStation>();
-        Clock.createInstance();
+        
         // Schedule timed notification for generating updates of 
         // hub display. 
 
