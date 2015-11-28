@@ -140,7 +140,7 @@ public class SystemTest {
     
     @Test
     public void testreturnBike(){
-    	//logger.info("Starting test:);
+    	logger.info("Starting test:);
     }
     
     
