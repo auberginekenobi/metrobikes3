@@ -1,0 +1,49 @@
+package bikescheme;
+
+import java.util.Date;
+import java.util.ArrayList;
+
+public class User {
+	
+	//declare fields here
+	//private String name;
+	private String keyID;
+	private Bike bike;
+	private int curNorth;
+	private int curEast;
+	private Date curTime;
+	private ArrayList<String> trips;
+	//private ArrayList<Trip> trips;
+	//mke into dictionary? need to add trip things
+	
+	
+	public User (String keyID) {
+		//this.name = name;
+		this.keyID = keyID;
+		bike = null;
+		curNorth = 0;
+		curEast= 0;
+		curTime= new Date();
+		trips = new ArrayList<String>();
+		//trips = new ArrayList<Trip>();
+	}
+	
+	//public String getName(){return name;}
+	public String getUID() {return keyID;}
+	public Bike getBike(){return bike;}
+	public void setBike(Bike val) {bike = val;}
+	public void setCurNorth(int var){curNorth = var;}
+	public int getCurNorth(){return curNorth;}
+	public void setCurEast(int var){curEast = var;}
+	public int getCurEast(){return curEast;}
+	public void setCurTime(Date x){curTime = x;}
+	public Date getCurTime(){return curTime;}
+
+	
+	public void addTrip(Trip trip){
+		trips.add(trip.toString());
+	}
+	
+	public ArrayList<String> getTrips(){return this.trips;}
+
+}

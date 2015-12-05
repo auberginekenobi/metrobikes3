@@ -5,8 +5,10 @@ package bikescheme;
 
 // import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -18,6 +20,7 @@ import org.junit.After;
 // import org.junit.AfterClass;
 import org.junit.Test;
 
+import java.util.Date;
 /**
  * @author pbj
  *
@@ -72,8 +75,25 @@ public class SystemTest {
     
     public void setupDemoSystemConfig() {
         input("1 07:00, HubTerminal, ht, addDStation, A,   0,   0, 5");
-        input("1 07:00, HubTerminal, ht, addDStation, B, 400, 300, 3");
+        input("1 07:00, HubTerminal, ht, addDStation, B, 400, 300, 20");
+        input("1 07:00, HubTerminal, ht, addDStation, C, 100, 500, 1");
+        
+        input ("1 7:30, BikeSensor, B.2.bs, dockBike, bike-1");
+    	expect("1 7:30, BikeLock, B.2.bl, locked");
+    	input ("1 7:30, BikeSensor, B.1.bs, dockBike, bike-2");
+    	expect("1 7:30, BikeLock, B.1.bl, locked");
+    	input ("1 7:30, BikeSensor, C.1.bs, dockBike, bike-3");
+    	expect("1 7:30, BikeLock, C.1.bl, locked");
+        
+        input ("1 08:00, DSTouchScreen, A.ts, startReg, Brian");
+        expect("1 08:00, CardReader, A.cr, enterCardAndPin");
+        input ("1 08:01, CardReader, A.cr, checkCard, Brian-card-auth");
+        expect("1 08:01, KeyIssuer, A.ki, keyIssued, A.ki-1");
+        
+       
     }
+    
+    
 
     /**
      *  Run the "Register User" use case.
@@ -93,7 +113,7 @@ public class SystemTest {
         input ("2 08:00, DSTouchScreen, A.ts, startReg, Alice");
         expect("2 08:00, CardReader, A.cr, enterCardAndPin");
         input ("2 08:01, CardReader, A.cr, checkCard, Alice-card-auth");
-        expect("2 08:01, KeyIssuer, A.ki, keyIssued, A.ki-1");
+        expect("2 08:01, KeyIssuer, A.ki, keyIssued, A.ki-2");
         
     }
     /**
@@ -115,8 +135,9 @@ public class SystemTest {
         input ("2 08:02, Clock, clk, tick");
         expect("2 08:00, HubDisplay, hd, viewOccupancy, unordered-tuples, 6,"
              + "DSName, East, North, Status, #Occupied, #DPoints,"
-             + "     A,  100,   200,   HIGH,        19,       20," 
-             + "     B,  300,  -500,    LOW,         1,       50");
+             + "A,0,0,LOW,0,5," 
+             + "B,400,300,LOW,2,20,"
+        	 + "C,100,500,HIGH,1,1");
     }
     
     /**
@@ -130,26 +151,174 @@ public class SystemTest {
         
         setupDemoSystemConfig();
         
-        input ("2 09:30, KeyReader, B.2.kr, insertKey, key-2"); 
-        //expect("2 09:30, BikeLock, B.2.bl, unlocked");
+        input ("2 09:30, KeyReader, B.2.kr, insertKey, A.ki-1"); 
+        expect("2 09:30, BikeLock, B.2.bl, unlocked");
         expect("2 09:30, OKLight,   B.2.ok, flashed");
         
     }
     
-    /* Test for bikereturn*/
+    @Test
+    public void testAddBike(){
+    	logger.info("Starting test: testAddBike");
+    	setupDemoSystemConfig();
+    	input ("1 7:30, BikeSensor, B.3.bs, dockBike, bike-4");
+    	expect("1 7:30, BikeLock, B.3.bl, locked");
+    }
+    
+    
+   /**
+    * A test for return bike
+    */
     
    @Test
     public void testReturnBike(){
     	logger.info("Starting test: testReturnBike");
     	setupDemoSystemConfig();
     	
-    	input ("2 10:30, BikeSensor, B.1.bs, key-1");
-    	expect ("2 10:30, BikeLock, B.1.bl, locked");
-    	expect ("2 10:30, OKLight, B.1.ok, flashed");
+    	//Brian hires a bike
+    	input ("2 09:30, KeyReader, B.2.kr, insertKey, A.ki-1"); 
+        expect("2 09:30, BikeLock, B.2.bl, unlocked");
+        expect("2 09:30, OKLight,   B.2.ok, flashed");
+    	
+        //Brian returns a bike
+    	input ("2 10:30, BikeSensor, B.2.bs, dockBike, bike-1");
+    	expect ("2 10:30, BikeLock, B.2.bl, locked");
+    	expect ("2 10:30, OKLight, B.2.ok, flashed");
     }
     
+   /*@Test
+    public void testViewActivity(){
+    	logger.info("Starting test: testViewOccupancy");
+    	setupDemoSystemConfig();
+  
+    	//Brian hires a bike
+    	input ("2 09:30, KeyReader, B.2.kr, insertKey, A.ki-1"); 
+        expect("2 09:30, BikeLock, B.2.bl, unlocked");
+        expect("2 09:30, OKLight,   B.2.ok, flashed");
+    	
+        //Brian returns a bike
+    	input ("2 10:30, BikeSensor, B.2.bs, dockBike, bike-1");
+    	expect ("2 10:30, BikeLock, B.2.bl, locked");
+    	expect ("2 10:30, OKLight, B.2.ok, flashed");
+    	
+    	//Brian needs to know about his trip
+    	//Brian has amnesia
+    	input ("2 10:44, DSTouchScreen, B.ts, viewActivity");
+    	expect("2 10:44, DSTouchScreen, B.ts, viewPrompt, bro i need a key");
+    	input ("2 10:45, KeyReader, B.kr, keyInsertion, A.ki-1");
+    	expect ("2 10:45, DSTouchScreen, B.ts, viewUserActivity, ordered-tuples, 4,"
+    			+ "HireTime,HireDS,ReturnDS,Duration (min),"
+    			+ "2 9:30,B,B,60");
+    	
+    }*/
     
-    
+   /**
+    * To test the event class.
+    * Conventions:
+    * a is an Event we create.
+    * b is another event, created by design to be the same as a.
+    * c is an event we make different from a.
+    * 
+    */
+   @SuppressWarnings("deprecation")
+@Test
+   public void testEventEquals(){
+	   logger.info("Starting test: testEventClass");
+	   Event a;
+	   Event b;
+	   Event c;
+	   Date dateA = new Date(2015,12,2,7,30);
+	   Date dateB = new Date(2015,12,2,7,30);
+	   Date dateC = new Date(2016,12,2,7,30);
+	   List<String> argsA = new ArrayList<String>();
+	   List<String> argsB = new ArrayList<String>();
+	   List<String> argsC = new ArrayList<String>();
+	   
+	   //same things
+	   a = new Event(dateA, "class","instance","messagename",argsA);
+	   b = new Event(dateB, "class","instance","messagename",argsB);
+	   assertTrue(a.equals(b));
+	   
+	   // two different dates
+	   c = new Event (dateC, "class", "instance", "messagename", argsC);
+	   assertFalse(a.equals(c));
+	   
+	   // different string arguments
+	   c = new Event (dateA,"Class","instance","messagename",argsA);
+	   assertFalse(a.equals(c));
+	   c = new Event (dateA,"class","Instance","messagename",argsA);
+	   assertFalse(a.equals(c));
+	   c = new Event (dateA,"class","instance","Messagename",argsA);
+	   assertFalse(a.equals(c));
+
+	   // different arguments. 
+	   argsC.add("unordered-tuples");
+	   argsC.add("2");
+	   c = new Event (dateA, "class","instance","messagename",argsC);
+	   assertFalse(a.equals(c));
+	   
+	   // adding same argument to different list
+	   argsA.add("unordered-tuples");
+	   argsA.add("2");
+	   assertTrue(a.equals(c));
+	   
+	   // testing ordered tuples
+	   String[] x = {"asdf","sfdg"};
+	   String[] y = {"gmmk","wert"};
+	   argsA.addAll(Arrays.asList(x));
+	   argsA.addAll(Arrays.asList(y));
+	   argsC.addAll(Arrays.asList(x));
+	   argsC.addAll(Arrays.asList(y));
+	   assertTrue(a.equals(c));
+	   
+	   //ordered tuples 
+	   int i = argsA.indexOf("unordered-tuples");
+	   argsA.add(i, "ordered-tuples");
+	   argsA.remove("unordered-tuples");
+	   i = argsC.indexOf("unordered-tuples");
+	   argsC.add(i, "ordered-tuples");
+	   argsC.remove("unordered-tuples");
+	   assertTrue(a.equals(c));
+	   
+	   argsA.addAll(Arrays.asList(x));
+	   argsB.addAll(Arrays.asList(y));
+	   assertFalse(a.equals(c));
+   }
+   
+   @SuppressWarnings("deprecation")
+@Test public void testEventListEqual(){
+	   logger.info("Starting test: testEventListEqual");
+	   ArrayList<Event> listA = new ArrayList<Event>();
+	   ArrayList<Event> listB = new ArrayList<Event>();
+	   
+	   Date dateA = new Date(2015,12,2,7,30);
+	   Date dateB = new Date(2015,12,2,7,30);
+	   List<String> argsA = new ArrayList<String>();
+	   List<String> argsB = new ArrayList<String>();
+	   Event a = new Event(dateA, "class","instance","messagename",argsA);
+	   Event b = new Event(dateB, "class", "instance", "messagename", argsB);
+	   //Event b = new Event(dateB, "class","pop","messagename",argsB);
+	   
+	   //check truth
+	   listA.add(a);
+	   listA.add(b);
+	   listB.add(a);
+	   listB.add(b);
+	   assertTrue(Event.listEqual(listA,listB));
+	   
+	   //check order
+	   //order unimportant!
+	   listB.remove(a);
+	   listB.add(a);
+	   assertTrue(Event.listEqual(listA, listB));
+	   
+	   // check additions
+	   listB.remove(b);
+	   listB.add(b);
+	   listB.add(a);
+	   assertFalse(Event.listEqual(listA,listB));
+	   
+   }
     
     
     /*
@@ -329,6 +498,7 @@ public class SystemTest {
             sb.append(e);
             sb.append(LS);
         }
+        System.out.println(sb.toString());
         logger.info(sb.toString());
         
         assertTrue("Expected and actual output events differ",

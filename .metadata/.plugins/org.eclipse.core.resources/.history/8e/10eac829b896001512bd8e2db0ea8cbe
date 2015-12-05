@@ -1,0 +1,37 @@
+package bikescheme;
+
+import java.util.date;
+
+public class User {
+	
+	//declare fields here
+	//private String name;
+	private String keyID;
+	private boolean bikestat;
+	private int curNorth;
+	private int curEast;
+	private Date curTime;
+	//mke into dictionary? need to add trip things
+	
+	
+	public User (String keyID) {
+		//this.name = name;
+		this.keyID = keyID;
+		bikestat = false;
+		curNorth = 0;
+		curEast= 0;
+		curTime= new Biketime (0, 0, 0);
+	}
+	
+	//public String getName(){return name;}
+	public String getUID() {return keyID;}
+	public boolean getHasBike(){return bikestat;}
+	public void setHasBike(boolean val) {bikestat = val;}
+	public void setCurNorth(int var){curNorth = var;}
+	public int getCurNorth(){return curNorth;}
+	public void setCurEast(int var){curEast = var;}
+	public int getCurEast(){return curEast;}
+	public void setCurTime(Date x){curTime = x;}
+	public Date getCurTime(){return curTime;}
+
+}

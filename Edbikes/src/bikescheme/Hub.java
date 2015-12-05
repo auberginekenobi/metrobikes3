@@ -5,6 +5,8 @@ package bikescheme;
 
 
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ public class Hub implements AddDStationObserver {
     private HubDisplay display;
     private Map<String,DStation> dockingStationMap;
     public Map<String, User> userMap;
+    public Map<String, Bike> bikeMap;
     
     /**
      * 
@@ -43,7 +46,9 @@ public class Hub implements AddDStationObserver {
         terminal.setObserver(this);
         display = new HubDisplay("hd");
         dockingStationMap = new HashMap<String,DStation>();
+        userMap = new HashMap<String,User>();
         Clock.createInstance();
+        bikeMap= new HashMap<String, Bike>();
         // Schedule timed notification for generating updates of 
         // hub display. 
 
@@ -60,12 +65,18 @@ public class Hub implements AddDStationObserver {
                     public void processTimedNotification() {
                         logger.fine("");
 
-                        String[] occupancyArray = 
+                        /*String[] occupancyArray = 
                                 // "DSName","East","North","Status","#Occupied","#DPoints"
                             {  "A",      "100",  "200",  "HIGH",       "19",     "20",
                                "B",      "300", "-500",   "LOW",        "1",     "50" };
-
-                        List<String> occupancyData = Arrays.asList(occupancyArray);
+						*/
+                        //List<String> occupancyData = Arrays.asList(occupancyArray);
+                        ArrayList<String> occupancyData = new ArrayList<String>();
+                        Iterator i = dockingStationMap.keySet().iterator();
+                        while (i.hasNext()){
+                        	occupancyData.addAll(Arrays.asList(dockingStationMap.get(i.next()).getOccupied()));
+                        }
+                        //System.out.println(occupancyData);
                         display.showOccupancy(occupancyData);
                     }
 
@@ -121,10 +132,11 @@ public class Hub implements AddDStationObserver {
         return dockingStationMap.get(instanceName);
     }
     
-    public void addUser (String keyID){
-    	User newUser = new User(keyID);
-    	userMap.put(keyID,newUser);
+    public void addUser (String keyId){
+    	User newUser = new User(keyId);
+    	userMap.put(keyId,newUser);
     }
  
+    
 
 }

@@ -1,25 +1,31 @@
 package bikescheme;
 
-import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Trip {
 
-	private Biketime starttime, endtime;
-	private int startnorth, endnorth, starteast, endeast;
-	private int cost;
+	private String starttime, endtime, startstation, endstation;
+	private int duration;
+	private List<String> l;
 	
-	public Trip(Biketime st, Biketime et, int sn, int en, int se, int ee){
+	public Trip(String st, String et, String ss, String es, int duration){
 		starttime = st;
 		endtime = et;
-		startnorth = sn;
-		endnorth = en;
-		starteast = se;
-		endeast = ee;
-		cost = calcCost(starttime,endtime);
+		startstation = ss;
+		endstation = es;
+		this.duration = duration;
+		l = new ArrayList<String>();
+		l.add(starttime);
+		l.add(startstation);
+		l.add(endstation);
+		l.add(""+duration);
 	}
 	public String toString(){
-		return starttime.toString() + endtime.toString() + "(" + startnorth + "," + starteast + ") ("
-		+ endnorth + "," + endeast + ") " + cost; 
+		return starttime + "," + startstation + "," + endstation + "," + duration; 
+	}
+	public List<String> toStringList(){
+		return l;
 	}
 	
 	
@@ -31,6 +37,7 @@ public class Trip {
 	 * 
 	 * @return the cost in pounds
 	 */
+	//OBSOLETE, REMOVE BEFORE WE SUBMIT. NO REALLY, THIS WOULD BE EMBARRASSING.
 	public static int calcCost(Biketime start, Biketime end){
 		//i am so sorry.
 		int numperiods = 0;

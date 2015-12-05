@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="SystemTest" project="Edbikes" tests="3" started="3" failures="0" errors="0" ignored="0">
-  <testsuite name="bikescheme.SystemTest" time="0.038">
-    <testcase name="registerUser" classname="bikescheme.SystemTest" time="0.024"/>
-    <testcase name="showHighLowOccupancy" classname="bikescheme.SystemTest" time="0.007"/>
-    <testcase name="testKeyReaderAndOKLight" classname="bikescheme.SystemTest" time="0.007"/>
-  </testsuite>
-</testrun>

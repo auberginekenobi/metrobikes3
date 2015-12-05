@@ -14,18 +14,20 @@ import java.util.logging.Logger;
  * @author pbj
  *
  */
-public class DStation implements StartRegObserver {
+public class DStation implements StartRegObserver, ViewActivityObserver {
     public static final Logger logger = Logger.getLogger("bikescheme");
 
     private String instanceName;
     private int eastPos;
     private int northPos;
+    private int numPointsOcc, numPoints; 
     
     private DSTouchScreen touchScreen;
     private CardReader cardReader; 
     private KeyIssuer keyIssuer;
     private List<DPoint> dockingPoints;
     private Hub hub;
+    private KeyReader keyReader;
  
     /**
      * 
@@ -54,6 +56,7 @@ public class DStation implements StartRegObserver {
         
         touchScreen = new DSTouchScreen(instanceName + ".ts");
         touchScreen.setObserver(this);
+        touchScreen.setViewActivityObserver(this);
         
         cardReader = new CardReader(instanceName + ".cr");
         
@@ -61,10 +64,14 @@ public class DStation implements StartRegObserver {
         
         dockingPoints = new ArrayList<DPoint>();
         
+        keyReader = new KeyReader(instanceName + ".kr");
+        
         for (int i = 1; i <= numPoints; i++) {
             DPoint dp = new DPoint(instanceName + "." + i, i - 1, this);
             dockingPoints.add(dp);
         }
+        numPointsOcc = 0;
+        this.numPoints = numPoints;
     }
     
     Hub getHub(){return hub;}
@@ -75,6 +82,7 @@ public class DStation implements StartRegObserver {
         for (DPoint dp : dockingPoints) {
             dp.setDistributor(d);
         }
+        keyReader.addDistributorLinks(d);
     }
     
     void setCollector(EventCollector c) {
@@ -84,6 +92,26 @@ public class DStation implements StartRegObserver {
         for (DPoint dp : dockingPoints) {
             dp.setCollector(c);
         }
+    }
+    
+    public int getNumPointsOcc(){return numPointsOcc;}
+    public void incNumPointsOcc(){numPointsOcc++;}
+    public void decNumPointsOcc(){numPointsOcc--;}
+    public int getNumPoints(){return numPoints;}
+    
+    public String[] getOccupied(){
+    	double perocc = ((double)numPointsOcc)/((double)numPoints);
+    	String status;
+    	if ( perocc < .15 || perocc > .85){
+    		if (perocc < .15){status="LOW";} else{status="HIGH";}
+    		String[] val = {getInstanceName(),""+eastPos,""+northPos, status, ""+numPointsOcc,""+numPoints};
+    		return val;
+    	}
+    	else{
+    		String[] val={};
+    		return val;
+    	}
+    
     }
     
     /** 
@@ -111,6 +139,22 @@ public class DStation implements StartRegObserver {
         
     }
     
+    /**
+     * Implementation for the user asking to view activity.
+     * 
+     * Method called by a touchScreen's viewActivity method.
+     */
+	@Override
+	public void viewActivityReceived() {
+    	logger.fine(getInstanceName());
+    	touchScreen.showPrompt("bro i need a key");
+    	String keyId = keyReader.waitForKeyInsertion();
+    	User user = hub.userMap.get(keyId);
+    	List<String> activityData = user.getTrips();
+    	//System.out.println(activityData);
+    	touchScreen.showUserActivity(activityData);
+	}
+    
     public String getInstanceName() {
         return instanceName;
     }
@@ -122,7 +166,7 @@ public class DStation implements StartRegObserver {
     public int getNorthPos() {
         return northPos;
     }
-    
+
  
 
 }

@@ -48,7 +48,7 @@ public class AllTests {
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println("test1");
+        //System.out.println("test1");
         if (args.length == 1) {
             runTestFromFiles(args[0]);
         } else if (args.length == 2) {

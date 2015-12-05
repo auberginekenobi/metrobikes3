@@ -3,6 +3,7 @@
  */
 package bikescheme;
 
+import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -23,7 +24,9 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
     private BikeSensor bikeSensor;
 
     private DStation dstation;
+    private Hub hub;
  
+    private Bike bike;
  
     /**
      * 
@@ -48,18 +51,22 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
         bikeSensor.setObserver(this);
         
         this.dstation = dstation;
+        this.hub = dstation.getHub();
 
         
     }
        
     public void setDistributor(EventDistributor d) {
         keyReader.addDistributorLinks(d); 
+        bikeSensor.addDistributorLinks(d);
     }
     
     public void setCollector(EventCollector c) {
         okLight.setCollector(c);
+        bikeLock.setCollector(c);
         
     }
+    
     
     public String getInstanceName() {
         return instanceName;
@@ -68,25 +75,71 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
         return index;
     }
     
+    
     /** 
-     * Dummy implementation of docking point functionality on key insertion.
+     * Runs the hireBike use case when the key is inserted.
      * 
-     * Here, just flash the OK light.
+     * unlock bike
+     * update user info
+     * flash light
      */
     public void keyInserted(String keyId) {
         logger.fine(getInstanceName());
-        //add trip start
         bikeLock.unlock();
+        User user = hub.userMap.get(keyId);
+        user.setCurDStation(dstation.getInstanceName());
+        user.setCurTime(Clock.getInstance().getDateAndTime());
+        user.setBike(bike);
+        bike.setUser(user);
+        //System.out.println(bike.getBikeID());
+        bike = null;
         okLight.flash();       
     }
     
-    public void bikeDocked(String keyId){
-    	logger.fine(getInstanceName());
-    	User user = dstation.getHub().userMap.get(keyId);
-    	user.setHasBike(false);
-    	//add trip end 
+    /**
+     * Runs the addBike and returnBike use cases.
+     * 
+     */
+    
+    public void bikeDocked(String bikeId){
+    	//System.out.println(bikeId);
+    	dstation.incNumPointsOcc();
+    	if (hub.bikeMap.containsKey(bikeId)){
+    		returnBike(bikeId);
+    	}
+    	else{
+    		addBike(bikeId);
+    	}
+    }
+    
+    private void addBike(String bikeId){
+    	Bike bike = new Bike(bikeId);
+    	hub.bikeMap.put(bikeId, bike);
+    	this.bike = bike;
     	bikeLock.lock();
-    	okLight.flash();	
+    }
+    
+    private void returnBike(String bikeId){
+    	logger.fine(getInstanceName());
+    	dstation.decNumPointsOcc();
+    	User user = hub.bikeMap.get(bikeId).getUser();
+    	Date endtime = (Clock.getInstance().getDateAndTime());
+    	Date starttime = user.getCurTime();
+    	Trip trip = new Trip(Clock.format(starttime), Clock.format(endtime),
+    			user.getCurDStation(),
+    			dstation.getInstanceName(),
+    			Clock.minutesBetween(starttime,endtime)); 
+    	user.addTrip(trip);
+    	bike = user.getBike();
+    	user.setBike(null);
+    	bikeLock.lock();
+    	okLight.flash();
+    }
+    
+    public static int calcCost(Date endtime, Date starttime){
+    	int periods = (Clock.minutesBetween(starttime, endtime))/30+1;
+    	int cost = 2*(periods-1)+1;
+    	return cost;
     }
     
 }
