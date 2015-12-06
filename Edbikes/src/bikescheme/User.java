@@ -48,6 +48,26 @@ public class User {
 		trips.addAll(trip.toStringList());
 	}
 	
-	public ArrayList<String> getTrips(){return this.trips;}
+	public ArrayList<String> getTrips(){
+		ArrayList<String> currentTrips = new ArrayList<String>();
+		for (int i= 0; i<trips.size(); i+=4){
+			String curDay =  Clock.format(Clock.getInstance().getDateAndTime());
+			String curTrip = trips.get(i);
+			Character ch = new Character(curDay.charAt(0)); // how is it this hard to get the first char in a string
+			if (curTrip.startsWith(ch.toString())){
+			// extract the date char from the string
+			// convert to int using Integer.parseInt()
+			//String tripDay = curTrip.starttime
+				currentTrips.add(curTrip);
+				currentTrips.add(trips.get(i+1));
+				currentTrips.add(trips.get(i+2));
+				currentTrips.add(trips.get(i+3));	
+			}
+		}
+		
+		return currentTrips;
+	}
 
+	
+	
 }

@@ -28,11 +28,11 @@ public class FaultyButton extends AbstractInputDevice {
     @Override
     public void receiveEvent(Event e) {
         
-        if (e.getMessageName().equals("faultyBike") 
+        if (e.getMessageName().equals("pressFaulty") 
                 && e.getMessageArgs().size() == 1) {
             
-            String bikeId = e.getMessageArg(0);
-            faultyBike(bikeId);
+            String dpoint = e.getMessageArg(0);
+            press(dpoint);
             
         } else {
             super.receiveEvent(e);
@@ -40,14 +40,14 @@ public class FaultyButton extends AbstractInputDevice {
     }
     
     /**
-     * Model insert key operation on a key reader object
+     * Model of a press function, in which the faulty button of a DPoint is pressed
      * 
      * @param keyId
      */
-    public void faultyBike(String bikeId) {
+    public void press(String dpoint) {
         logger.fine(getInstanceName());
         
-        observer.faultyBike(bikeId);
+        observer.FaultyBike(dpoint);
     }
 
     /*

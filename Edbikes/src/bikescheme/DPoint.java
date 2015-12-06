@@ -13,7 +13,9 @@ import java.util.logging.Logger;
  * @author pbj
  *
  */
-public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
+
+// FaultyButtonObserver
+public class DPoint implements KeyInsertionObserver, BikeDockingObserver {
     public static final Logger logger = Logger.getLogger("bikescheme");
 
     private KeyReader keyReader; 
@@ -22,6 +24,8 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
     private int index;
     private BikeLock bikeLock;
     private BikeSensor bikeSensor;
+    private FaultyButton faultyButton;
+    private FaultyLight faultyLight;
 
     private DStation dstation;
     private Hub hub;
@@ -49,6 +53,10 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
         bikeLock = new BikeLock(instanceName + ".bl");
         bikeSensor = new BikeSensor(instanceName + ".bs");
         bikeSensor.setObserver(this);
+        faultyButton = new FaultyButton(instanceName + ".fb");
+        //faultyButton.setObserver(this);
+        faultyLight = new FaultyLight(instanceName + ".fl");
+        
         
         this.dstation = dstation;
         this.hub = dstation.getHub();
@@ -59,11 +67,13 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
     public void setDistributor(EventDistributor d) {
         keyReader.addDistributorLinks(d); 
         bikeSensor.addDistributorLinks(d);
+        faultyButton.addDistributorLinks(d);
     }
     
     public void setCollector(EventCollector c) {
         okLight.setCollector(c);
         bikeLock.setCollector(c);
+        faultyLight.setCollector(c);
         
     }
     
@@ -91,7 +101,7 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
         user.setCurTime(Clock.getInstance().getDateAndTime());
         user.setBike(bike);
         bike.setUser(user);
-        //System.out.println(bike.getBikeID());
+        dstation.decNumPointsOcc();
         bike = null;
         okLight.flash();       
     }
@@ -117,11 +127,11 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
     	hub.bikeMap.put(bikeId, bike);
     	this.bike = bike;
     	bikeLock.lock();
+    	okLight.flash();
     }
     
     private void returnBike(String bikeId){
     	logger.fine(getInstanceName());
-    	dstation.decNumPointsOcc();
     	User user = hub.bikeMap.get(bikeId).getUser();
     	Date endtime = (Clock.getInstance().getDateAndTime());
     	Date starttime = user.getCurTime();
@@ -133,8 +143,21 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver{
     	bike = user.getBike();
     	user.setBike(null);
     	bikeLock.lock();
+    	//String dpoint = getInstanceName();
     	okLight.flash();
+    	//if bike is faulty show red light, if not show red light
+    	/*if (Clock.minutesBetween(endtime, (Clock.getInstance().getDateAndTime())) > 2){}
+    	else{
+    			reportFaulty(dpoint);
+    		}*/
+    		
     }
+    	
+    
+   /* private void reportFaulty(String dpoint){
+    	faultyButton.press(dpoint);
+    	faultyLight.shine();
+    }*/
     
     public static int calcCost(Date endtime, Date starttime){
     	int periods = (Clock.minutesBetween(starttime, endtime))/30+1;

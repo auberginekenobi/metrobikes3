@@ -4,13 +4,12 @@ package bikescheme;
 
 /**
  * 
- * Interface for any class with objects that receive bikeDocked
- * notifications from a BikeSensor device.
- * 
- * @author pbj
+ * Interface for any class with objects that receive faultyButton notifications from
+ * a faulty button device
+ * @author ls & oc
  *
  */
 public interface FaultyButtonObserver {
-    public void faultyBike(String bikeID);
+    public void FaultyBike(String dpoint);
 }
 	

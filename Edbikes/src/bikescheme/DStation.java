@@ -147,7 +147,7 @@ public class DStation implements StartRegObserver, ViewActivityObserver {
 	@Override
 	public void viewActivityReceived() {
     	logger.fine(getInstanceName());
-    	touchScreen.showPrompt("bro i need a key");
+    	touchScreen.showPrompt("Insert a key");
     	String keyId = keyReader.waitForKeyInsertion();
     	User user = hub.userMap.get(keyId);
     	List<String> activityData = user.getTrips();
