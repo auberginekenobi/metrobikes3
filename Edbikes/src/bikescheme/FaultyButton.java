@@ -1,5 +1,12 @@
 package bikescheme;
 
+/**
+ * Faulty Button at a docking point
+ * 
+ * @author Lex
+ *
+ */
+
 public class FaultyButton extends AbstractInputDevice {
 	
 	private FaultyButtonObserver observer;
@@ -13,9 +20,7 @@ public class FaultyButton extends AbstractInputDevice {
      *  
      */
     
-    /**
-     * @param o
-     */
+ 
     public void setObserver(FaultyButtonObserver o) {
         observer = o;
     }
@@ -42,12 +47,12 @@ public class FaultyButton extends AbstractInputDevice {
     /**
      * Model of a press function, in which the faulty button of a DPoint is pressed
      * 
-     * @param keyId
+     * @param dpoint: a button is assigned to a unique docking point
      */
     public void press(String dpoint) {
         logger.fine(getInstanceName());
         
-        observer.FaultyBike(dpoint);
+        observer.faultyBikeReceived(dpoint);
     }
 
     /*

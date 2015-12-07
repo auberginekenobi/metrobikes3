@@ -10,6 +10,6 @@ package bikescheme;
  *
  */
 public interface FaultyButtonObserver {
-    public void FaultyBike(String dpoint);
+    public void faultyBikeReceived(String dpoint);
 }
 	

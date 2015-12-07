@@ -1,5 +1,15 @@
 package bikescheme;
 
+
+/**
+ * Information attributed to each bike
+ *
+ * 
+ * @authors Lex + Owen
+ *
+ */
+
+
 public class Bike {
 	private String bikeID;
 	private User user;

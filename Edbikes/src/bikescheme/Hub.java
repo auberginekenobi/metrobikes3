@@ -59,7 +59,7 @@ public class Hub implements AddDStationObserver {
                 new TimedNotificationObserver() {
 
                     /** 
-                     * Generate dummy display of station occupancy data.
+                     * Generate display of station occupancy data.
                      */
                     @Override
                     public void processTimedNotification() {
@@ -105,7 +105,11 @@ public class Hub implements AddDStationObserver {
     
 
     /**
-     * 
+     * adding a new Dstation to the hub 
+     * @param instanceName: unique name of the new docking station
+     * @param eastPos: the east position of the new docking station
+     * @param northPos: the north position of the new docking station
+     * @param numPoints: the number of docking points allocated to the new docking station
      */
     @Override
     public void addDStation(

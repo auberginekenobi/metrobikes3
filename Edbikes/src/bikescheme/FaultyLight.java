@@ -7,7 +7,7 @@ package bikescheme;
 	/**
 	 * Red faulty light output device 
 	 * 
-	 * @author pbj
+	 * @author Lex
 	 *
 	 */
 	public class FaultyLight extends AbstractOutputDevice {
@@ -16,12 +16,12 @@ package bikescheme;
 	        super(instanceName);
 	    }
 	    
-	    public void shine() {
+	    public void on() {
 	        logger.fine(getInstanceName());
 	        
 	        String deviceClass = "FaultyLight";
 	        String deviceInstance = getInstanceName();
-	        String messageName = "shone";
+	        String messageName = "on";
 	        List<String> valueList = new ArrayList<String>();
 	 
 	        super.sendEvent(

@@ -151,7 +151,6 @@ public class DStation implements StartRegObserver, ViewActivityObserver {
     	String keyId = keyReader.waitForKeyInsertion();
     	User user = hub.userMap.get(keyId);
     	List<String> activityData = user.getTrips();
-    	//System.out.println(activityData);
     	touchScreen.showUserActivity(activityData);
 	}
     

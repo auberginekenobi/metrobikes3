@@ -75,7 +75,7 @@ public class SystemTest {
     
     public void setupDemoSystemConfig() {
         input("1 07:00, HubTerminal, ht, addDStation, A,   0,   0, 5");
-        input("1 07:00, HubTerminal, ht, addDStation, B, 400, 300, 20");
+        input("1 07:00, HubTerminal, ht, addDStation, B, 400, 300, 4");
         input("1 07:00, HubTerminal, ht, addDStation, C, 100, 500, 1");
         
         input ("1 7:30, BikeSensor, B.2.bs, dockBike, bike-1");
@@ -103,8 +103,8 @@ public class SystemTest {
      * 
      */
     @Test
-    public void registerUser() {
-        logger.info("Starting test: registerUser");
+    public void testRegisterUser() {
+        logger.info("Starting test: testRegisterUser");
 
         setupDemoSystemConfig();
         
@@ -128,8 +128,8 @@ public class SystemTest {
      */
         
     @Test 
-    public void showHighLowOccupancy() {
-        logger.info("Starting test: showHighLowOccupancy");
+    public void testShowHighLowOccupancy() {
+        logger.info("Starting test: testShowHighLowOccupancy");
         
         setupDemoSystemConfig();
 
@@ -139,7 +139,6 @@ public class SystemTest {
         expect("2 08:00, HubDisplay, hd, viewOccupancy, unordered-tuples, 6,"
              + "DSName, East, North, Status, #Occupied, #DPoints,"
              + "A,0,0,LOW,0,5," 
-             + "B,400,300,LOW,2,20,"
         	 + "C,100,500,HIGH,1,1");
     }
     
@@ -206,15 +205,24 @@ public class SystemTest {
     	expect ("2 10:30, OKLight, B.2.ok, flashed");
     	
     	//Brian hires a bike the next day
+    	input ("6 07:30, KeyReader, B.2.kr, insertKey, A.ki-1"); 
+        expect("6 07:30, BikeLock, B.2.bl, unlocked");
+        expect("6 07:30, OKLight,   B.2.ok, flashed");
+    	
+        //Brian returns bike next day
+        input ("6 08:30, BikeSensor, B.2.bs, dockBike, bike-1");
+    	expect ("6 08:30, BikeLock, B.2.bl, locked");
+    	expect ("6 08:30, OKLight, B.2.ok, flashed");
+    	
+    	//Brian hires a bike same day
     	input ("6 09:30, KeyReader, B.2.kr, insertKey, A.ki-1"); 
         expect("6 09:30, BikeLock, B.2.bl, unlocked");
         expect("6 09:30, OKLight,   B.2.ok, flashed");
     	
-        //Brian returns bike next day
+        //Brian returns bike sameday
         input ("6 10:30, BikeSensor, B.2.bs, dockBike, bike-1");
     	expect ("6 10:30, BikeLock, B.2.bl, locked");
     	expect ("6 10:30, OKLight, B.2.ok, flashed");
-    	
     	
     	//Brian needs to know about his trip
     	//Brian has amnesia
@@ -223,6 +231,7 @@ public class SystemTest {
     	input ("6 10:45, KeyReader, B.kr, keyInsertion, A.ki-1");
     	expect ("6 10:45, DSTouchScreen, B.ts, viewUserActivity, ordered-tuples, 4,"
     			+ "HireTime,HireDS,ReturnDS,Duration (min),"
+    			+ "6 07:30,B,B,60,"
     			+ "6 09:30,B,B,60");
     	
     }

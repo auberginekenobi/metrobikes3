@@ -89,9 +89,7 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver {
     /** 
      * Runs the hireBike use case when the key is inserted.
      * 
-     * unlock bike
-     * update user info
-     * flash light
+     *@param keyId: unique ID designated to a user 
      */
     public void keyInserted(String keyId) {
         logger.fine(getInstanceName());
@@ -109,6 +107,7 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver {
     /**
      * Runs the addBike and returnBike use cases.
      * 
+     * @param bikeId: unique ID designated to a bike
      */
     
     public void bikeDocked(String bikeId){
@@ -155,10 +154,16 @@ public class DPoint implements KeyInsertionObserver, BikeDockingObserver {
     	
     
    /* private void reportFaulty(String dpoint){
-    	faultyButton.press(dpoint);
-    	faultyLight.shine();
+    	faultyLight.on();
     }*/
     
+    /**
+     * Calculates the cost of each trip
+     * 
+     * @param endtime: the end time of a specific trip a
+     * @param starttime: the start time of the specific trip a
+     * @return cost: the amount to be charged to a user's credit card for trip a
+     */
     public static int calcCost(Date endtime, Date starttime){
     	int periods = (Clock.minutesBetween(starttime, endtime))/30+1;
     	int cost = 2*(periods-1)+1;
